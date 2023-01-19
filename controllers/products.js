@@ -1,7 +1,7 @@
 const Product = require('../models/product');
 
 const getAllProducts = async (req, res, next) => {
-  const { featured, company } = req.query;
+  const { featured, company, search } = req.query;
   const queryObj = {};
 
   if (featured) {
@@ -10,7 +10,9 @@ const getAllProducts = async (req, res, next) => {
   if (company) {
     queryObj.company = company;
   }
-
+  if (search) {
+    queryObj.name = { $regex: search, $options: 'i' };
+  }
   const products = await Product.find(queryObj);
 
   if (!products.length) {
