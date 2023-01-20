@@ -1,7 +1,7 @@
 const Product = require('../models/product');
 
 const getAllProducts = async (req, res, next) => {
-  const { featured, company, search } = req.query;
+  const { featured, company, search, sort } = req.query;
   const queryObj = {};
 
   if (featured) {
@@ -13,7 +13,15 @@ const getAllProducts = async (req, res, next) => {
   if (search) {
     queryObj.name = { $regex: search, $options: 'i' };
   }
-  const products = await Product.find(queryObj);
+
+  const result = Product.find(queryObj);
+
+  if (sort) {
+    const sortList = sort.split(',').join(' ');
+    result.sort(sortList);
+  }
+
+  const products = await result;
 
   if (!products.length) {
     throw new Error('404 not found');
